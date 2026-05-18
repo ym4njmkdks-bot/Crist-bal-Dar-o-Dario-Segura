@@ -1,0 +1,668 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#0a0a0a">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Arnold Split">
+<meta name="description" content="Rutina Arnold Split personalizada">
+<title>Arnold Split</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --red: #e63946;
+    --orange: #f4a261;
+    --teal: #2a9d8f;
+    --purple: #6d6875;
+    --bg: #0a0a0a;
+    --bg2: #111111;
+    --bg3: #181818;
+    --border: #232323;
+    --text: #f0ede6;
+    --muted: #666;
+    --safe-top: env(safe-area-inset-top, 0px);
+    --safe-bottom: env(safe-area-inset-bottom, 0px);
+  }
+
+  html, body {
+    height: 100%; background: var(--bg);
+    font-family: 'DM Sans', sans-serif;
+    color: var(--text); overflow: hidden;
+    -webkit-tap-highlight-color: transparent;
+    overscroll-behavior: none;
+  }
+
+  #app {
+    height: 100vh; display: flex; flex-direction: column;
+    padding-top: var(--safe-top);
+  }
+
+  /* HEADER */
+  .header {
+    background: var(--bg);
+    padding: 16px 18px 0;
+    border-bottom: 1px solid var(--border);
+    flex-shrink: 0;
+    position: relative;
+  }
+  .header-top {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 14px;
+  }
+  .header-brand {
+    display: flex; flex-direction: column;
+  }
+  .header-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 9px; letter-spacing: 3px; color: var(--red);
+    text-transform: uppercase; margin-bottom: 2px;
+  }
+  .header-title {
+    font-family: 'Bebas Neue', cursive;
+    font-size: 26px; letter-spacing: 1px; line-height: 1;
+    color: var(--text);
+  }
+  .header-sub {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px; color: var(--muted); margin-top: 2px;
+  }
+
+  /* TABS */
+  .tabs {
+    display: flex; gap: 0;
+  }
+  .tab-btn {
+    background: none; border: none; cursor: pointer;
+    padding: 10px 16px;
+    font-family: 'DM Mono', monospace;
+    font-size: 10px; letter-spacing: 2px; text-transform: uppercase;
+    color: var(--muted); border-bottom: 2px solid transparent;
+    margin-bottom: -1px; transition: all 0.2s; flex: 1;
+  }
+  .tab-btn.active { color: var(--text); border-bottom-color: var(--red); }
+
+  /* MAIN SCROLL */
+  .main {
+    flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch;
+    padding-bottom: calc(80px + var(--safe-bottom));
+  }
+  .content { padding: 16px; }
+
+  /* DAY PILL SELECTOR */
+  .day-selector {
+    display: grid; grid-template-columns: repeat(7, 1fr);
+    gap: 5px; margin-bottom: 20px;
+  }
+  .day-pill {
+    background: var(--bg2); border: 1px solid var(--border);
+    border-radius: 8px; padding: 8px 4px;
+    cursor: pointer; text-align: center;
+    transition: all 0.2s; display: flex; flex-direction: column;
+    align-items: center; gap: 3px;
+  }
+  .day-pill.active { border-color: var(--accent); background: var(--accent-dim); }
+  .day-pill-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 8px; letter-spacing: 1px; color: var(--muted);
+  }
+  .day-pill.active .day-pill-label { color: var(--text); }
+  .day-pill-icon { font-size: 14px; }
+
+  /* DAY CARD */
+  .day-card {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px 16px;
+    margin-bottom: 16px;
+    border-left: 3px solid var(--accent);
+    animation: fadeIn 0.3s ease;
+  }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+  .day-card-tag {
+    font-family: 'DM Mono', monospace;
+    font-size: 9px; letter-spacing: 3px; color: var(--accent);
+    text-transform: uppercase; margin-bottom: 4px;
+  }
+  .day-card-name {
+    font-family: 'Bebas Neue', cursive;
+    font-size: 24px; letter-spacing: 1px; color: var(--text);
+  }
+
+  /* GROUP */
+  .group { margin-bottom: 10px; }
+  .group-header {
+    width: 100%; background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: 8px; padding: 12px 14px;
+    cursor: pointer; display: flex;
+    justify-content: space-between; align-items: center;
+    transition: border-color 0.2s;
+  }
+  .group-header.open { border-radius: 8px 8px 0 0; border-bottom-color: transparent; }
+  .group-header-left { display: flex; align-items: center; gap: 8px; }
+  .group-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); flex-shrink: 0; }
+  .group-name {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: var(--text);
+  }
+  .group-meta {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px; color: var(--muted);
+  }
+  .group-chevron { color: var(--muted); font-size: 10px; transition: transform 0.2s; }
+  .group-chevron.open { transform: rotate(180deg); }
+
+  /* EXERCISES */
+  .exercises { overflow: hidden; }
+  .exercise {
+    background: #0d0d0d;
+    border: 1px solid var(--border); border-top: none;
+    padding: 12px 14px;
+    animation: slideDown 0.2s ease;
+  }
+  .exercise:last-child { border-radius: 0 0 8px 8px; }
+  @keyframes slideDown { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: translateY(0); } }
+  .exercise-name { font-size: 14px; font-weight: 700; margin-bottom: 8px; }
+  .exercise-stats { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 8px; }
+  .stat-pill {
+    background: var(--bg3); border: 1px solid var(--border);
+    border-radius: 5px; padding: 4px 8px;
+  }
+  .stat-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 7px; letter-spacing: 2px; color: var(--muted); text-transform: uppercase;
+  }
+  .stat-value {
+    font-family: 'DM Mono', monospace;
+    font-size: 12px; font-weight: 500; color: var(--accent);
+  }
+  .exercise-tip {
+    font-size: 11px; color: var(--muted); font-style: italic;
+    padding-left: 8px; border-left: 2px solid var(--accent-dim2);
+    line-height: 1.5;
+  }
+
+  /* NOTES */
+  .notes-card {
+    background: #0d0d0d; border: 1px solid var(--border);
+    border-radius: 10px; padding: 14px 16px; margin-top: 16px;
+  }
+  .notes-title {
+    font-family: 'DM Mono', monospace;
+    font-size: 9px; letter-spacing: 3px; color: var(--muted);
+    text-transform: uppercase; margin-bottom: 12px;
+  }
+  .note-item {
+    display: flex; gap: 10px; margin-bottom: 8px;
+    font-size: 12px; color: #888; align-items: flex-start; line-height: 1.5;
+  }
+  .note-num {
+    font-family: 'DM Mono', monospace;
+    font-size: 9px; color: var(--red); margin-top: 3px; flex-shrink: 0;
+  }
+
+  /* SUPPLEMENTS */
+  .supp-header {
+    margin-bottom: 16px;
+  }
+  .supp-tag {
+    font-family: 'DM Mono', monospace;
+    font-size: 9px; letter-spacing: 3px; color: var(--red);
+    text-transform: uppercase; margin-bottom: 4px;
+  }
+  .supp-title { font-family: 'Bebas Neue', cursive; font-size: 22px; letter-spacing: 1px; }
+  .supp-sub { font-size: 11px; color: var(--muted); margin-top: 2px; }
+
+  .supp-block {
+    background: var(--bg2); border: 1px solid var(--border);
+    border-radius: 10px; padding: 14px 16px; margin-bottom: 10px;
+  }
+  .supp-block-time {
+    font-size: 13px; font-weight: 700; margin-bottom: 12px;
+  }
+  .supp-item {
+    display: flex; justify-content: space-between; align-items: flex-start;
+    padding: 9px 0; gap: 10px;
+  }
+  .supp-item + .supp-item { border-top: 1px solid #1a1a1a; }
+  .supp-item-name { font-size: 13px; font-weight: 600; margin-bottom: 2px; }
+  .supp-item-note { font-size: 11px; color: var(--muted); }
+  .supp-dose {
+    background: var(--bg3); border: 1px solid var(--border);
+    border-radius: 5px; padding: 4px 10px;
+    font-family: 'DM Mono', monospace;
+    font-size: 11px; color: var(--orange); white-space: nowrap; flex-shrink: 0;
+  }
+
+  .warning-card {
+    background: #0d0d0d;
+    border: 1px solid #e6394620;
+    border-left: 3px solid var(--red);
+    border-radius: 10px; padding: 14px 16px; margin-top: 8px;
+  }
+  .warning-title {
+    font-family: 'DM Mono', monospace;
+    font-size: 9px; letter-spacing: 2px; color: var(--red);
+    text-transform: uppercase; margin-bottom: 10px;
+  }
+
+  /* BOTTOM NAV */
+  .bottom-nav {
+    position: fixed; bottom: 0; left: 0; right: 0;
+    background: rgba(10,10,10,0.95);
+    backdrop-filter: blur(20px);
+    border-top: 1px solid var(--border);
+    display: flex;
+    padding-bottom: var(--safe-bottom);
+    z-index: 100;
+  }
+  .nav-btn {
+    flex: 1; background: none; border: none; cursor: pointer;
+    padding: 12px 8px; display: flex; flex-direction: column;
+    align-items: center; gap: 4px; transition: opacity 0.2s;
+  }
+  .nav-icon { font-size: 20px; }
+  .nav-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 8px; letter-spacing: 1px; text-transform: uppercase;
+    color: var(--muted); transition: color 0.2s;
+  }
+  .nav-btn.active .nav-label { color: var(--red); }
+
+  /* INSTALL BANNER */
+  .install-banner {
+    background: linear-gradient(135deg, #1a1a1a, #141414);
+    border: 1px solid var(--red);
+    border-radius: 10px; padding: 14px 16px;
+    margin: 16px 16px 0; display: flex;
+    align-items: center; gap: 12px;
+    animation: fadeIn 0.5s ease;
+  }
+  .install-text { flex: 1; font-size: 12px; color: #aaa; line-height: 1.4; }
+  .install-text strong { color: var(--text); display: block; margin-bottom: 2px; font-size: 13px; }
+  .install-btn {
+    background: var(--red); border: none; color: #fff;
+    padding: 8px 14px; border-radius: 6px; cursor: pointer;
+    font-family: 'DM Mono', monospace; font-size: 10px;
+    letter-spacing: 1px; white-space: nowrap; font-weight: 500;
+    flex-shrink: 0;
+  }
+  .install-close {
+    background: none; border: none; color: var(--muted);
+    cursor: pointer; font-size: 18px; padding: 0 0 0 4px; flex-shrink: 0;
+  }
+</style>
+</head>
+<body>
+
+<div id="app">
+  <div class="header">
+    <div class="header-top">
+      <div class="header-brand">
+        <div class="header-label">Arnold Split</div>
+        <div class="header-title">MASA MUSCULAR</div>
+        <div class="header-sub">17a · 74kg · Avanzado · 6-8 reps</div>
+      </div>
+    </div>
+    <div class="tabs">
+      <button class="tab-btn active" onclick="switchTab('rutina')">🏋️ Rutina</button>
+      <button class="tab-btn" onclick="switchTab('suplementos')">💊 Suplementos</button>
+    </div>
+  </div>
+
+  <div id="install-banner" class="install-banner" style="display:none">
+    <div class="install-text">
+      <strong>📱 Guardar como App</strong>
+      Instalá esta rutina en tu teléfono
+    </div>
+    <button class="install-btn" onclick="installApp()">INSTALAR</button>
+    <button class="install-close" onclick="dismissBanner()">×</button>
+  </div>
+
+  <div class="main">
+    <div id="tab-rutina" class="content">
+      <div class="day-selector" id="day-selector"></div>
+      <div id="day-content"></div>
+    </div>
+    <div id="tab-suplementos" class="content" style="display:none">
+      <div class="supp-header">
+        <div class="supp-tag">Protocolo diario</div>
+        <div class="supp-title">SUPLEMENTOS</div>
+        <div class="supp-sub">148g proteína · 3000-3200 kcal/día</div>
+      </div>
+      <div id="supp-content"></div>
+    </div>
+  </div>
+
+  <div class="bottom-nav">
+    <button class="nav-btn active" onclick="switchTab('rutina')">
+      <span class="nav-icon">🏋️</span>
+      <span class="nav-label">Rutina</span>
+    </button>
+    <button class="nav-btn" onclick="switchTab('suplementos')">
+      <span class="nav-icon">💊</span>
+      <span class="nav-label">Suplementos</span>
+    </button>
+  </div>
+</div>
+
+<script>
+const DAYS = [
+  {
+    day: "LUNES", label: "PECHO + ESPALDA", color: "#e63946", icon: "💪",
+    groups: [
+      { name: "PECHO", exercises: [
+        { name: "Press mancuernas plano", sets: 5, reps: "6-8", weight: "26-28kg", rest: "2-3 min", tip: "Baja lento 3 seg, explota arriba. Codos a 45°." },
+        { name: "Press mancuernas inclinado 30°", sets: 4, reps: "6-8", weight: "24-26kg", rest: "2-3 min", tip: "Inclinación leve activa la zona clavicular del pecho." },
+        { name: "Aperturas mancuernas plano", sets: 4, reps: "8-10", weight: "14-16kg", rest: "90 seg", tip: "Codos ligeramente flexionados, estiramiento máximo abajo." },
+        { name: "Cruces en polea alta", sets: 3, reps: "10-12", weight: "12-15kg", rest: "60 seg", tip: "Aprieta en el centro, contrae pectoral 1 seg al final." },
+      ]},
+      { name: "ESPALDA", exercises: [
+        { name: "Jalón al pecho agarre ancho", sets: 5, reps: "6-8", weight: "45-55kg", rest: "2-3 min", tip: "Pecho arriba, lleva la barra al esternón. No el cuello." },
+        { name: "Remo con mancuerna", sets: 4, reps: "6-8", weight: "30-32kg", rest: "2 min", tip: "Codo pegado al cuerpo, aprieta escápula al final." },
+        { name: "Remo en polea baja", sets: 4, reps: "8-10", weight: "40-50kg", rest: "90 seg", tip: "No arquees en exceso, contrae en el recorrido final." },
+        { name: "Pullover mancuerna", sets: 3, reps: "10-12", weight: "22-24kg", rest: "60 seg", tip: "Estira el dorsal, mantén codos levemente doblados." },
+      ]},
+    ]
+  },
+  {
+    day: "MARTES", label: "HOMBROS + BRAZOS", color: "#f4a261", icon: "🔥",
+    groups: [
+      { name: "HOMBROS", exercises: [
+        { name: "Press militar mancuernas", sets: 5, reps: "6-8", weight: "28-30kg", rest: "2-3 min", tip: "No bloquees codos arriba. Tensión constante." },
+        { name: "Elevaciones laterales", sets: 4, reps: "8-10", weight: "12kg", rest: "90 seg", tip: "Pulgares abajo, sube hasta paralelo al suelo." },
+        { name: "Pájaros (posterior)", sets: 4, reps: "10-12", weight: "10-12kg", rest: "90 seg", tip: "Inclinado 45°, codos semiflexionados." },
+        { name: "Elevaciones frontales", sets: 3, reps: "10-12", weight: "10kg", rest: "60 seg", tip: "Alterna brazos, no uses impulso." },
+      ]},
+      { name: "BÍCEPS", exercises: [
+        { name: "Curl mancuernas alterno", sets: 4, reps: "6-8", weight: "18-20kg", rest: "2 min", tip: "Supina la muñeca al subir. Baja lento 3 seg." },
+        { name: "Curl martillo", sets: 3, reps: "8-10", weight: "16-18kg", rest: "90 seg", tip: "Trabaja braquial y braquioradial. Agarre neutro." },
+        { name: "Curl concentrado", sets: 3, reps: "10-12", weight: "14-16kg", rest: "60 seg", tip: "Codo fijo en rodilla. Contrae arriba 1 seg." },
+      ]},
+      { name: "TRÍCEPS", exercises: [
+        { name: "Fondos en paralelas", sets: 4, reps: "6-8", weight: "PC +5kg", rest: "2 min", tip: "Cuerpo vertical, codos cerca del cuerpo." },
+        { name: "Press francés mancuerna", sets: 3, reps: "8-10", weight: "22kg total", rest: "90 seg", tip: "Codos fijos, solo mueve el antebrazo." },
+        { name: "Extensión tríceps polea", sets: 3, reps: "10-12", weight: "25-30kg", rest: "60 seg", tip: "Codos pegados al cuerpo, extiende completo." },
+      ]},
+    ]
+  },
+  {
+    day: "MIÉRCOLES", label: "PIERNAS", color: "#2a9d8f", icon: "🦵",
+    groups: [
+      { name: "CUÁDRICEPS / GLÚTEOS", exercises: [
+        { name: "Sentadilla libre", sets: 5, reps: "6-8", weight: "60-70kg", rest: "3 min", tip: "Rodillas en línea con pies, profundidad total." },
+        { name: "Prensa de piernas", sets: 4, reps: "8-10", weight: "110-130kg", rest: "2-3 min", tip: "Pies separados, no bloquees rodillas arriba." },
+        { name: "Extensión de cuádriceps", sets: 3, reps: "10-12", weight: "45-55kg", rest: "90 seg", tip: "Contrae cuádriceps arriba, baja lento 3 seg." },
+        { name: "Sentadilla búlgara", sets: 3, reps: "8 c/lado", weight: "20kg c/mano", rest: "2 min", tip: "Rodilla trasera cerca del suelo, torso erguido." },
+      ]},
+      { name: "ISQUIOS / PANTORRILLAS", exercises: [
+        { name: "Peso muerto rumano mancuernas", sets: 4, reps: "6-8", weight: "30-32kg c/mano", rest: "2-3 min", tip: "Cadera atrás, espalda neutra, siente el estiramiento." },
+        { name: "Curl femoral tumbado", sets: 3, reps: "10-12", weight: "35-40kg", rest: "90 seg", tip: "Contrae al máximo arriba, baja controlado." },
+        { name: "Pantorrillas de pie", sets: 5, reps: "12-15", weight: "70-80kg", rest: "60 seg", tip: "Rango completo, pausa abajo, explota arriba." },
+      ]},
+    ]
+  },
+  {
+    day: "JUEVES", label: "PECHO + ESPALDA B", color: "#e63946", icon: "💪",
+    groups: [
+      { name: "PECHO (B)", exercises: [
+        { name: "Press mancuernas declinado", sets: 5, reps: "6-8", weight: "26-28kg", rest: "2-3 min", tip: "Zona baja del pectoral, codos a 45°." },
+        { name: "Press mancuernas plano", sets: 4, reps: "6-8", weight: "26-28kg", rest: "2-3 min", tip: "Si completás 8 reps, la semana que viene subís 2kg." },
+        { name: "Aperturas en polea", sets: 4, reps: "10-12", weight: "15kg c/lado", rest: "90 seg", tip: "Tensión constante en todo el recorrido." },
+        { name: "Fondos inclinado pecho", sets: 3, reps: "8-10", weight: "Peso corporal", rest: "90 seg", tip: "Inclinate adelante para enfatizar pecho." },
+      ]},
+      { name: "ESPALDA (B)", exercises: [
+        { name: "Dominadas agarre supino", sets: 5, reps: "6-8", weight: "PC (+5kg si podés)", rest: "2-3 min", tip: "Pecho al bar, codos adentro, baja lento." },
+        { name: "Remo en máquina Hammer", sets: 4, reps: "6-8", weight: "65-75kg", rest: "2 min", tip: "Aprieta escápulas al final del recorrido." },
+        { name: "Remo con barra T", sets: 4, reps: "8-10", weight: "50-60kg", rest: "90 seg", tip: "Espalda plana, codos a 45° del cuerpo." },
+        { name: "Encogimientos mancuernas", sets: 3, reps: "10-12", weight: "30-32kg c/mano", rest: "60 seg", tip: "Sostén arriba 2 seg, baja lento." },
+      ]},
+    ]
+  },
+  {
+    day: "VIERNES", label: "HOMBROS + BRAZOS B", color: "#f4a261", icon: "🔥",
+    groups: [
+      { name: "HOMBROS (B)", exercises: [
+        { name: "Press Arnold mancuernas", sets: 5, reps: "6-8", weight: "22-24kg", rest: "2-3 min", tip: "El ejercicio signature de Arnold. Rota la muñeca mientras presionás." },
+        { name: "Elevaciones laterales cable", sets: 4, reps: "10-12", weight: "10-12kg", rest: "90 seg", tip: "Tensión constante vs mancuerna = mejor activación." },
+        { name: "Face pulls polea", sets: 4, reps: "12-15", weight: "20-25kg", rest: "90 seg", tip: "Fundamental para salud del manguito rotador." },
+        { name: "Press Arnold unilateral", sets: 3, reps: "8 c/lado", weight: "20-22kg", rest: "90 seg", tip: "Unilateral para corregir desequilibrios entre lados." },
+      ]},
+      { name: "BÍCEPS (B)", exercises: [
+        { name: "Curl barra Z", sets: 4, reps: "6-8", weight: "35-40kg", rest: "2 min", tip: "Baja lento 4 seg, explota arriba. Codos fijos." },
+        { name: "Curl inclinado mancuernas", sets: 3, reps: "8-10", weight: "14-16kg", rest: "90 seg", tip: "Estiramiento máximo del bíceps. Clave para crecer." },
+        { name: "Curl predicador", sets: 3, reps: "10-12", weight: "25-30kg", rest: "60 seg", tip: "No bajes completo, para en 160° para no lesionarte." },
+      ]},
+      { name: "TRÍCEPS (B)", exercises: [
+        { name: "Press cerrado mancuernas", sets: 4, reps: "6-8", weight: "22-24kg c/mano", rest: "2 min", tip: "Mancuernas juntas, empuja y aprieta tríceps." },
+        { name: "Patada de tríceps cable", sets: 3, reps: "10-12", weight: "15-20kg", rest: "90 seg", tip: "Codo a 90° fijo, extiende completo." },
+        { name: "Extensión sobre cabeza polea", sets: 3, reps: "10-12", weight: "20-25kg", rest: "60 seg", tip: "Trabaja la cabeza larga del tríceps." },
+      ]},
+    ]
+  },
+  {
+    day: "SÁBADO", label: "PIERNAS B", color: "#2a9d8f", icon: "🦵",
+    groups: [
+      { name: "PIERNAS (B)", exercises: [
+        { name: "Peso muerto convencional", sets: 5, reps: "6", weight: "70-80kg", rest: "3 min", tip: "El rey de los ejercicios. Espalda neutra, empuja el suelo." },
+        { name: "Zancadas caminando", sets: 4, reps: "10 c/lado", weight: "20-22kg c/mano", rest: "2 min", tip: "Rodilla trasera toca suelo, torso recto." },
+        { name: "Hack squat / Prensa", sets: 4, reps: "8-10", weight: "100-120kg", rest: "2-3 min", tip: "Pies altos = más glúteo. Pies bajos = más cuádriceps." },
+        { name: "Curl femoral unilateral", sets: 3, reps: "10-12 c/lado", weight: "25-30kg", rest: "90 seg", tip: "Unilateral para corregir desequilibrios." },
+        { name: "Abductores máquina", sets: 3, reps: "15", weight: "45-55kg", rest: "60 seg", tip: "Glúteo medio, importante para estabilidad." },
+        { name: "Pantorrillas sentado", sets: 5, reps: "15-20", weight: "45-55kg", rest: "60 seg", tip: "Sóleo. Rodillas dobladas = más sóleo que gemelos." },
+      ]},
+    ]
+  },
+  {
+    day: "DOMINGO", label: "DESCANSO ACTIVO", color: "#6d6875", icon: "😴",
+    groups: [
+      { name: "RECUPERACIÓN", exercises: [
+        { name: "Caminata 30-40 min", sets: 1, reps: "—", weight: "—", rest: "—", tip: "Aumenta flujo sanguíneo sin fatigar el sistema nervioso." },
+        { name: "Stretching completo", sets: 1, reps: "—", weight: "—", rest: "—", tip: "10 min mínimo. Pecho, espalda, piernas." },
+        { name: "Foam roller", sets: 1, reps: "—", weight: "—", rest: "—", tip: "Libera tensión muscular acumulada de la semana." },
+      ]},
+    ]
+  },
+];
+
+const SUPPLEMENTS = [
+  { time: "🌅 Al despertar", items: [
+    { name: "Creatina", dose: "5g", note: "Con agua. Todos los días aunque no entrenes." },
+    { name: "Vitamina D3", dose: "3000 UI", note: "Con un vaso de agua." },
+  ]},
+  { time: "🍳 Con el desayuno", items: [
+    { name: "Omega 3", dose: "2g", note: "Con la comida para mejor absorción." },
+    { name: "Zinc", dose: "15mg", note: "Con comida para no irritar el estómago." },
+  ]},
+  { time: "⚡ Pre-entreno (30-45 min)", items: [
+    { name: "EAAs", dose: "1 scoop", note: "Si entrenás en ayunas o con poco desayuno." },
+    { name: "Cafeína", dose: "100-150mg", note: "1 café solo. No abuses a los 17 años." },
+  ]},
+  { time: "🥤 Post-entreno (30 min)", items: [
+    { name: "Whey / Mass Gainer", dose: "35g proteína", note: "Meta: 148g proteína/día total." },
+  ]},
+  { time: "🌙 Antes de dormir", items: [
+    { name: "Glutamina", dose: "5g", note: "Opcional. 5g en agua antes de dormir." },
+  ]},
+];
+
+let activeDay = new Date().getDay(); // 0=domingo, 1=lunes...
+// Mapear: Dom=6, Lun=0, Mar=1...
+const dayMap = [6, 0, 1, 2, 3, 4, 5];
+activeDay = dayMap[activeDay] !== undefined ? dayMap[activeDay] : 0;
+
+let openGroups = {};
+let deferredPrompt = null;
+
+window.addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault();
+  deferredPrompt = e;
+  document.getElementById('install-banner').style.display = 'flex';
+});
+
+function installApp() {
+  if (deferredPrompt) {
+    deferredPrompt.prompt();
+    deferredPrompt.userChoice.then(() => { deferredPrompt = null; dismissBanner(); });
+  } else {
+    alert('Para instalar: en Safari toca el botón Compartir → "Agregar a inicio". En Chrome toca el menú ⋮ → "Instalar app".');
+  }
+}
+
+function dismissBanner() {
+  document.getElementById('install-banner').style.display = 'none';
+}
+
+function switchTab(tab) {
+  document.getElementById('tab-rutina').style.display = tab === 'rutina' ? 'block' : 'none';
+  document.getElementById('tab-suplementos').style.display = tab === 'suplementos' ? 'block' : 'none';
+  document.querySelectorAll('.tab-btn').forEach((b, i) => {
+    b.classList.toggle('active', (i === 0 && tab === 'rutina') || (i === 1 && tab === 'suplementos'));
+  });
+  document.querySelectorAll('.nav-btn').forEach((b, i) => {
+    b.classList.toggle('active', (i === 0 && tab === 'rutina') || (i === 1 && tab === 'suplementos'));
+  });
+}
+
+function setDay(idx) {
+  activeDay = idx;
+  openGroups = {};
+  renderDaySelector();
+  renderDayContent();
+}
+
+function toggleGroup(dayIdx, groupIdx) {
+  const key = `${dayIdx}-${groupIdx}`;
+  openGroups[key] = !openGroups[key];
+  renderDayContent();
+}
+
+function renderDaySelector() {
+  const sel = document.getElementById('day-selector');
+  sel.innerHTML = DAYS.map((d, i) => {
+    const isActive = i === activeDay;
+    return `<button class="day-pill ${isActive ? 'active' : ''}"
+      onclick="setDay(${i})"
+      style="${isActive ? `--accent:${d.color}; border-color:${d.color}; background:${d.color}18;` : ''}">
+      <span class="day-pill-label">${d.day.slice(0,3)}</span>
+      <span class="day-pill-icon">${d.icon}</span>
+    </button>`;
+  }).join('');
+}
+
+function renderDayContent() {
+  const d = DAYS[activeDay];
+  const accentDim = d.color + '25';
+  const accentDim2 = d.color + '50';
+
+  let html = `
+    <style>
+      :root { --accent: ${d.color}; --accent-dim: ${accentDim}; --accent-dim2: ${accentDim2}; }
+    </style>
+    <div class="day-card">
+      <div class="day-card-tag">${d.day}</div>
+      <div class="day-card-name">${d.label}</div>
+    </div>
+  `;
+
+  d.groups.forEach((g, gi) => {
+    const key = `${activeDay}-${gi}`;
+    const isOpen = !!openGroups[key];
+    html += `
+      <div class="group">
+        <button class="group-header ${isOpen ? 'open' : ''}" onclick="toggleGroup(${activeDay}, ${gi})">
+          <div class="group-header-left">
+            <span class="group-dot"></span>
+            <span class="group-name">${g.name}</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px">
+            <span class="group-meta">${g.exercises.length} ejercicios</span>
+            <span class="group-chevron ${isOpen ? 'open' : ''}">▼</span>
+          </div>
+        </button>
+        ${isOpen ? `<div class="exercises">${g.exercises.map(ex => `
+          <div class="exercise">
+            <div class="exercise-name">${ex.name}</div>
+            <div class="exercise-stats">
+              <div class="stat-pill"><div class="stat-label">Series</div><div class="stat-value">${ex.sets}</div></div>
+              <div class="stat-pill"><div class="stat-label">Reps</div><div class="stat-value">${ex.reps}</div></div>
+              <div class="stat-pill"><div class="stat-label">Peso</div><div class="stat-value">${ex.weight}</div></div>
+              ${ex.rest !== '—' ? `<div class="stat-pill"><div class="stat-label">Descanso</div><div class="stat-value">${ex.rest}</div></div>` : ''}
+            </div>
+            <div class="exercise-tip">💡 ${ex.tip}</div>
+          </div>
+        `).join('')}</div>` : ''}
+      </div>
+    `;
+  });
+
+  html += `
+    <div class="notes-card">
+      <div class="notes-title">Principios clave</div>
+      ${['Progresión: si completás todas las reps, la semana que viene subís 1-2kg.',
+         'Técnica primero. Con 6-8 reps el peso es alto — nunca sacrifiques forma.',
+         'Tempo recomendado: 3 seg bajando, 1 seg arriba (3-1-0).',
+         'Calentamiento: 2 series ligeras (50% del peso) antes del trabajo real.',
+        ].map((n, i) => `<div class="note-item"><span class="note-num">0${i+1}</span><span>${n}</span></div>`).join('')}
+    </div>
+  `;
+
+  document.getElementById('day-content').innerHTML = html;
+}
+
+function renderSupplements() {
+  let html = SUPPLEMENTS.map(block => `
+    <div class="supp-block">
+      <div class="supp-block-time">${block.time}</div>
+      ${block.items.map((item, ii) => `
+        <div class="supp-item">
+          <div>
+            <div class="supp-item-name">${item.name}</div>
+            <div class="supp-item-note">${item.note}</div>
+          </div>
+          <div class="supp-dose">${item.dose}</div>
+        </div>
+      `).join('')}
+    </div>
+  `).join('');
+
+  html += `
+    <div class="warning-card">
+      <div class="warning-title">⚠️ Importante a tus 17 años</div>
+      ${['Evitá pre-entrenos con estimulantes fuertes (DMAA, sinefrina). Tu sistema nervioso todavía madura.',
+         'Los BCAAs quedan cubiertos por los EAAs. No los combines, son redundantes.',
+         'El BPC-157 no está aprobado. A los 17 no vale la pena el riesgo. Guardalo.',
+         'Dormí 8h mínimo. El músculo crece durmiendo, no entrenando.',
+        ].map(n => `<div class="note-item"><span class="note-num">•</span><span>${n}</span></div>`).join('')}
+    </div>
+  `;
+
+  document.getElementById('supp-content').innerHTML = html;
+}
+
+// Init
+renderDaySelector();
+renderDayContent();
+renderSupplements();
+
+// Register service worker for offline
+if ('serviceWorker' in navigator) {
+  const sw = `
+    const CACHE = 'arnold-split-v1';
+    self.addEventListener('install', e => e.waitUntil(caches.open(CACHE).then(c => c.addAll(['/']))));
+    self.addEventListener('fetch', e => e.respondWith(caches.match(e.request).then(r => r || fetch(e.request))));
+  `;
+  const blob = new Blob([sw], { type: 'application/javascript' });
+  navigator.serviceWorker.register(URL.createObjectURL(blob));
+}
+</script>
+
+</body>
+</html>
